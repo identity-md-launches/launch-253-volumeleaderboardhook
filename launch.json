@@ -1,0 +1,28 @@
+{
+  "kind": "univ4_hook",
+  "hook": {
+    "contract": "VolumeLeaderboardHook",
+    "constructorArgs": [
+      "0xE03A1074c86CFeDd5C142C4F04F1a1536e203543"
+    ],
+    "permissions": [
+      "beforeSwap",
+      "afterSwap",
+      "beforeSwapReturnDelta",
+      "afterSwapReturnDelta"
+    ]
+  },
+  "token": {
+    "contract": "VOLM",
+    "name": "Volume",
+    "symbol": "VOLM",
+    "decimals": 18
+  },
+  "pool": {
+    "pairedCurrency": "0x0000000000000000000000000000000000000000",
+    "fee": 3000,
+    "tickSpacing": 60,
+    "initialPrice": "79228162514264337593543950336"
+  },
+  "notes": "Describes src/VolumeLeaderboardHook.sol:VolumeLeaderboardHook and src/VOLM.sol:VOLM for the approved Sepolia launch. ABI exports are docs/abi/VolumeLeaderboardHook.json and docs/abi/VOLM.json. The hook constructor takes only IPoolManager manager; VOLM takes no constructor arguments. getHookPermissions enables exactly the four listed flags; all others are false. The constructor validates the hook address bits: address & 0x3fff must equal 0x00cc. The pool uses native ETH as currency0, deployed VOLM as currency1, and the deployed hook. Its LP fee is 0.3%. initialPrice is decimal sqrtPriceX96, equal to 2^96 (1:1 raw units), matching test/helpers/FactoryRehearsal.sol. This price is the existing rehearsal assumption, not a numeric price specified in the approved brief. The rehearsal initializes at this price, seeds VOLM-only liquidity and exercises the first buy with no initial ETH reserve. The hook charges floor(ETH-leg volume * 30 / 10000): a positive specified beforeSwap delta when ETH is specified, or a positive unspecified afterSwap delta otherwise. Fees become ERC-6909 ETH claims; callbacks do not transfer ETH. Partial fills revert. Each native-ETH pool has separate weekly epochs starting at hook construction and an O(5) top-five volume leaderboard with strict overtaking and incumbent tie priority. Anyone may trigger ended-epoch rank payouts of 40/25/15/10/10 percent to recorded recipients; finalization carries empty-rank shares and rounding remainder into the then-current epoch. Payouts burn claims and take ETH through unlockCallback. All callbacks require the PoolManager. Non-ETH currency0 pools receive zero deltas and no bookkeeping. Identity comes from exactly 32 bytes encoding a canonical nonzero address; invalid data credits nobody but still pays fees. hookData is unauthenticated and can credit another address. No admin, setters, pause, upgrade or sweep are implemented. This Sepolia toy promises no return. These notes describe implementation and local rehearsal assumptions; launch policy and signed artifact linkage belong to services. Independent review, source publication, attestation, admission and deployment are separate steps whose completion is not asserted here."
+}
